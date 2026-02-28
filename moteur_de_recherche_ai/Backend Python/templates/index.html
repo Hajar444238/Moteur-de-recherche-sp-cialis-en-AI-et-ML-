@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI & ML - Moteur de Recherche Intelligent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Page d'accueil */
+        .welcome-page {
+            min-height: 100vh;
+            background: url('https://tse4.mm.bing.net/th/id/OIP.V3K6VXdY4IUPOeaskgJj4wHaEK?pid=Api&P=0&h=180') center/cover no-repeat;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .welcome-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(3px);
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            color: white;
+            max-width: 800px;
+        }
+
+        .welcome-title {
+            font-size: 5em;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 10px rgba(0,0,0,0.5);
+            animation: fadeInScale 1s ease;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.8em;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        .welcome-description {
+            font-size: 1.2em;
+            margin-bottom: 50px;
+            line-height: 1.6;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .enter-btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            border: none;
+            color: white;
+            padding: 20px 60px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.3em;
+            font-weight: 700;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 153, 255, 0.4);
+            animation: fadeInUp 1s ease 0.9s both;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .enter-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 153, 255, 0.6);
+        }
+
+        /* Page principale */
+        .main-page {
+            display: none;
+            min-height: 100vh;
+            background: url('https://tse4.mm.bing.net/th/id/OIP.V3K6VXdY4IUPOeaskgJj4wHaEK?pid=Api&P=0&h=180') center/cover fixed;
+            position: relative;
+            padding: 20px;
+        }
+
+        .main-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 20, 40, 0.85);
+            backdrop-filter: blur(5px);
+        }
+
+        .main-page.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 80px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 50px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        .header h1 {
+            font-size: 3.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.95;
+        }
+
+        .search-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50px;
+            padding: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.8s ease;
+            border: 2px solid rgba(0, 153, 255, 0.3);
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            padding: 15px 25px;
+            font-size: 1.1em;
+            background: transparent;
+        }
+
+        .search-box button {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            border: none;
+            color: white;
+            padding: 15px 35px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .search-box button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 153, 255, 0.5);
+        }
+
+        .filters {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+            animation: fadeInUp 0.8s ease 0.2s both;
+        }
+
+        .filter-btn {
+            background: rgba(0, 153, 255, 0.2);
+            border: 2px solid rgba(0, 212, 255, 0.5);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 153, 255, 0.4);
+            border-color: #00d4ff;
+        }
+
+        .results {
+            animation: fadeIn 0.5s ease;
+        }
+
+        .result-item {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: slideInUp 0.5s ease;
+            cursor: pointer;
+            border: 2px solid rgba(0, 153, 255, 0.2);
+        }
+
+        .result-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 153, 255, 0.3);
+            background: rgba(255, 255, 255, 1);
+            border-color: #00d4ff;
+        }
+
+        .result-title {
+            color: #0099ff;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-type {
+            display: inline-block;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+
+        .result-content {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .result-path {
+            color: #999;
+            font-size: 0.9em;
+            font-style: italic;
+        }
+
+        .result-path a {
+            color: #0099ff;
+            text-decoration: none;
+            transition: color 0.2s;
+            font-weight: 500;
+        }
+
+        .result-path a:hover {
+            color: #00d4ff;
+            text-decoration: underline;
+        }
+
+        .open-file-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #00d4ff 0%, #0099ff 100%);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-top: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .open-file-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 3px 10px rgba(0, 153, 255, 0.4);
+        }
+
+        .file-actions {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .result-score {
+            display: inline-block;
+            background: #ffd700;
+            color: #333;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .stats-box {
+            background: rgba(0, 153, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            color: white;
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            animation: fadeInUp 0.8s ease 0.4s both;
+            border: 2px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #00d4ff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+        }
+
+        .stat-label {
+            font-size: 1em;
+            opacity: 0.9;
+        }
+
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            margin: 40px 0;
+        }
+
+        .no-results {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            color: #999;
+            font-size: 1.2em;
+        }
+
+        .error-message {
+            background: #ff4444;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page d'accueil -->
+    <div class="welcome-page" id="welcomePage">
+        <div class="welcome-content">
+            <h1 class="welcome-title">🤖 AI & ML</h1>
+            <p class="welcome-subtitle">Moteur de Recherche Intelligent</p>
+            <p class="welcome-description">
+                Explorez vos documents avec la puissance de l'intelligence artificielle et du machine learning. 
+                Une recherche rapide, précise et intuitive à portée de main.
+            </p>
+            <button class="enter-btn" onclick="enterApp()">Commencer</button>
+        </div>
+    </div>
+
+    <!-- Page principale -->
+    <div class="main-page" id="mainPage">
+        <div class="container">
+            <div class="header">
+                <h1>🤖 AI & ML</h1>
+                <p>Recherche intelligente dans vos documents</p>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Rechercher dans vos documents..." />
+                <button onclick="performSearch()">🔍 Rechercher</button>
+            </div>
+
+            <div class="filters">
+                <button class="filter-btn active" data-type="all">📚 Tout</button>
+                <button class="filter-btn" data-type="document">📄 Documents</button>
+                <button class="filter-btn" data-type="image">🖼 Images</button>
+                <button class="filter-btn" data-type="video">🎬 Vidéos</button>
+            </div>
+
+            <div id="results"></div>
+
+            <div class="stats-box">
+                <div class="stat-item">
+                    <div class="stat-number" id="statDocs">0</div>
+                    <div class="stat-label">Documents</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="statImages">0</div>
+                    <div class="stat-label">Images</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="statVideos">0</div>
+                    <div class="stat-label">Vidéos</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="statKeywords">0</div>
+                    <div class="stat-label">Mots-clés</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentFilter = 'all';
+
+        function enterApp() {
+            document.getElementById('welcomePage').style.display = 'none';
+            document.getElementById('mainPage').classList.add('active');
+            loadStats();
+        }
+
+        // Gestion des filtres
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                currentFilter = this.dataset.type;
+                
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput.value.trim()) {
+                    performSearch();
+                }
+            });
+        });
+
+        // Recherche avec Enter
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/statistiques');
+                
+                if (!response.ok) {
+                    throw new Error('Erreur serveur');
+                }
+                
+                const data = await response.json();
+                
+                if (data.stats_base) {
+                    document.getElementById('statDocs').textContent = data.stats_base.nb_documents || 0;
+                    document.getElementById('statImages').textContent = data.stats_base.nb_images || 0;
+                    document.getElementById('statVideos').textContent = data.stats_base.nb_videos || 0;
+                    document.getElementById('statKeywords').textContent = data.stats_base.nb_mots_cles_uniques || 0;
+                }
+                
+                console.log('✅ Statistiques chargées:', data);
+            } catch (error) {
+                console.error('❌ Erreur lors du chargement des stats:', error);
+            }
+        }
+
+        async function performSearch() {
+            const query = document.getElementById('searchInput').value.trim();
+            const resultsDiv = document.getElementById('results');
+            
+            if (!query) {
+                resultsDiv.innerHTML = '<div class="no-results">Veuillez entrer une recherche</div>';
+                return;
+            }
+
+            resultsDiv.innerHTML = '<div class="loading">⏳ Recherche en cours...</div>';
+
+            try {
+                const response = await fetch('/api/rechercher', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        q: query,
+                        type: currentFilter,
+                        limit: 20
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erreur serveur');
+                }
+
+                const data = await response.json();
+                
+                console.log('🔍 Résultats de recherche:', data);
+                
+                if (data.resultats && data.resultats.length > 0) {
+                    resultsDiv.innerHTML = data.resultats.map(result => {
+                        try {
+                            const filePath = result.chemin || '';
+                            const fileType = result.type || 'document';
+                            const isVideo = ['video', 'mp4', 'avi', 'mov', 'webm'].includes(fileType.toLowerCase());
+                            
+                            const fileUrl = filePath ? (isVideo ? `/video/${encodeURIComponent(filePath)}` : `/file/${encodeURIComponent(filePath)}`) : '#';
+                            
+                            const isImage = ['image', 'jpg', 'jpeg', 'png', 'gif'].includes(fileType.toLowerCase());
+                            
+                            return `
+                                <div class="result-item" onclick="openFile('${fileUrl.replace(/'/g, "\\'")}', '${fileType}')">
+                                    <div class="result-type">${getTypeIcon(fileType)} ${fileType}
+                                        ${result.score ? `<span class="result-score">⭐ ${result.score.toFixed(2)}</span>` : ''}
+                                    </div>
+                                    <div class="result-title">${escapeHtml(result.titre || 'Sans titre')}</div>
+                                    <div class="result-content">${escapeHtml(truncate(result.extrait || result.contenu || result.description || 'Aucun contenu', 200))}</div>
+                                    <div class="result-path">📁 ${escapeHtml(filePath || 'Chemin inconnu')}</div>
+                                    <div class="file-actions" onclick="event.stopPropagation()">
+                                        <a href="${fileUrl}" target="_blank" class="open-file-btn" title="Ouvrir le fichier">
+                                            ${isImage ? '🖼️ Voir l\'image' : isVideo ? '🎬 Lire la vidéo' : '📄 Ouvrir le document'}
+                                        </a>
+                                        <small style="color: #999;">Cliquez n'importe où sur la carte pour ouvrir</small>
+                                    </div>
+                                </div>
+                            `;
+                        } catch (e) {
+                            console.error('Erreur affichage résultat:', e, result);
+                            return '';
+                        }
+                    }).join('');
+                    
+                    console.log(`✅ ${data.nb_total} résultats affichés en ${data.temps_ms}ms`);
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="no-results">
+                            😔 Aucun résultat trouvé pour "${escapeHtml(query)}"
+                            <br><br>
+                            <small>Essayez avec d'autres mots-clés ou indexez de nouveaux documents</small>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = '<div class="error-message">❌ Erreur lors de la recherche</div>';
+                console.error('❌ Erreur:', error);
+            }
+        }
+
+        function getFilterName(filter) {
+            const names = {
+                'all': 'résultat',
+                'document': 'document',
+                'image': 'image',
+                'video': 'vidéo'
+            };
+            return names[filter] || 'résultat';
+        }
+
+        function openFile(url, fileType) {
+            if (!url || url === '#' || url === 'undefined') {
+                alert('⚠️ Chemin du fichier introuvable');
+                return;
+            }
+            
+            console.log('🚀 Ouverture du fichier:', url, 'Type:', fileType);
+            window.open(url, '_blank');
+        }
+
+        function getTypeIcon(type) {
+            const typeStr = type.toLowerCase();
+            const icons = {
+                'document': '📄',
+                'image': '🖼',
+                'video': '🎬',
+                'text': '📝',
+                'pdf': '📕',
+                'txt': '📝',
+                'docx': '📘',
+                'jpg': '🖼',
+                'png': '🖼',
+                'gif': '🖼',
+                'mp4': '🎬',
+                'avi': '🎬',
+                'mov': '🎬'
+            };
+            return icons[typeStr] || '📄';
+        }
+
+        function formatPath(path) {
+            if (!path) return '<span style="color: #ccc;">Chemin inconnu</span>';
+            
+            try {
+                const isAbsolutePath = /^[A-Za-z]:\\/.test(path);
+                
+                if (isAbsolutePath) {
+                    const urlPath = path.replace(/\\/g, '/');
+                    return `<a href="file:///${urlPath}" target="_blank" title="Ouvrir le fichier">${escapeHtml(path)}</a>`;
+                } else {
+                    return escapeHtml(path);
+                }
+            } catch (e) {
+                console.error('Erreur formatPath:', e, path);
+                return escapeHtml(String(path));
+            }
+        }
+
+        function truncate(text, length) {
+            if (!text) return '';
+            return text.length > length ? text.substring(0, length) + '...' : text;
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

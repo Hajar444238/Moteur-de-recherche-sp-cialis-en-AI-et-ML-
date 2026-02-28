@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecteur Vidéo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        
+        .video-container {
+            width: 90%;
+            max-width: 1200px;
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+        }
+        
+        .video-title {
+            color: white;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        video {
+            width: 100%;
+            max-height: 70vh;
+            border-radius: 8px;
+            background: black;
+        }
+        
+        .video-info {
+            color: #aaa;
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .error-message {
+            background: #ff4444;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .back-button, .download-button {
+            display: inline-block;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: transform 0.2s;
+            font-weight: 600;
+        }
+        
+        .download-button {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+        
+        .back-button:hover, .download-button:hover {
+            transform: scale(1.05);
+        }
+        
+        .loading {
+            text-align: center;
+            color: white;
+            font-size: 1.2em;
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <h1 class="video-title">{{ titre }}</h1>
+        
+        <video id="videoPlayer" controls>
+            <source src="{{ video_url }}" type="{{ mime_type }}">
+            Votre navigateur ne supporte pas ce format de vidéo.
+        </video>
+        
+        <div id="errorMessage" class="error-message" style="display: none;">
+            ⚠️ Cette vidéo ne peut pas être lue dans le navigateur.<br>
+            Le format <strong>{{ mime_type }}</strong> n'est pas supporté.<br>
+            Veuillez télécharger la vidéo pour la lire avec votre lecteur vidéo.
+        </div>
+        
+        <div class="video-info">
+            <p>{{ description }}</p>
+            <div class="buttons">
+                <a href="/" class="back-button">← Retour à la recherche</a>
+                <a href="{{ video_url }}" download class="download-button">⬇️ Télécharger la vidéo</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const video = document.getElementById('videoPlayer');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        // Détecter si la vidéo ne peut pas être lue
+        video.addEventListener('error', function(e) {
+            console.error('Erreur de lecture vidéo:', e);
+            video.style.display = 'none';
+            errorMessage.style.display = 'block';
+        });
+        
+        // Vérifier après 3 secondes si la vidéo s'est chargée
+        setTimeout(function() {
+            if (video.readyState === 0) {
+                console.warn('La vidéo ne se charge pas');
+                video.style.display = 'none';
+                errorMessage.style.display = 'block';
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
